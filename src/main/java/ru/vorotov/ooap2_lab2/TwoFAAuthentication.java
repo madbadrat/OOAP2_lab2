@@ -10,19 +10,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
-public class TwoFAAuthenticationDecorator extends AuthenticationDecorator {
+public class TwoFAAuthentication implements Authentication {
     private GoogleAuthenticator gAuth = new GoogleAuthenticator();
     private GoogleAuthenticatorKey key = gAuth.createCredentials();
     private String otpAuthURL = "otpauth://totp/MyApp:user@example.com?secret=" + key.getKey() + "&issuer=MyApp";
 
-    public TwoFAAuthenticationDecorator(Authentication authentication, ImageView shrekImage) {
-        super(authentication);
-        shrekImage.setImage(generateQRCode(otpAuthURL, 200, 200));
+    public boolean authenticate(User user, String enteredLogin, String enteredPassword, int OTP) {
+        if (user.getUsername().equals(enteredLogin) && user.getPassword().equals(enteredPassword) && gAuth.authorize(key.getKey(), OTP)) {
+            return true;
+        }
+        return false;
     }
 
-    @Override
-    public boolean authenticate(User user, String enteredLogin, String enteredPassword, int OTP) {
-        return super.authenticate(user, enteredLogin, enteredPassword) && gAuth.authorize(key.getKey(), OTP);
+    public TwoFAAuthentication(ImageView view) {
+        view.setImage(generateQRCode(otpAuthURL, 200, 200));
     }
 
     public Image generateQRCode(String text, int width, int height) {
@@ -46,5 +47,10 @@ public class TwoFAAuthenticationDecorator extends AuthenticationDecorator {
         }
 
         return writableImage;
+    }
+
+    @Override
+    public boolean authenticate(User user, String enteredLogin, String enteredPassword) {
+        return false;
     }
 }

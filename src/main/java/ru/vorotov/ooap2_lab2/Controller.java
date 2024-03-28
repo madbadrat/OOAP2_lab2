@@ -23,7 +23,7 @@ public class Controller implements Initializable {
     private TextField otpField;
 
     private User user;
-    private Authentication authentication = new BaseAuthentication();
+    private Authentication authentication;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -31,12 +31,13 @@ public class Controller implements Initializable {
     }
 
     public void onRegButtonClick(ActionEvent actionEvent) {
+        authentication = new BaseAuthentication();
         user = new User(loginField.getText(), passwordField.getText());
     }
 
     public void onLoginButtonClick(ActionEvent actionEvent) {
-        if (authentication instanceof TwoFAAuthenticationDecorator) {
-            if (((TwoFAAuthenticationDecorator) authentication).authenticate(user, loginField.getText(), passwordField.getText(), Integer.parseInt(otpField.getText()))) {
+        if (authentication instanceof TwoFAAuthentication) {
+            if (((TwoFAAuthentication) authentication).authenticate(user, loginField.getText(), passwordField.getText(), Integer.parseInt(otpField.getText()))) {
                 shrekImage.setVisible(true);
             }
         } else if (authentication instanceof BaseAuthentication) {
@@ -56,7 +57,7 @@ public class Controller implements Initializable {
 
     public void onAdd2FAButtonClick(ActionEvent actionEvent) {
         if (shrekImage.isVisible()) {
-            authentication = new TwoFAAuthenticationDecorator(authentication, qrImage);
+            authentication = new TwoFAAuthentication(qrImage);
             qrImage.setVisible(true);
         }
     }
