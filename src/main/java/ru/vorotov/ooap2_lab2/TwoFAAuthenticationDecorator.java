@@ -15,9 +15,9 @@ public class TwoFAAuthenticationDecorator extends AuthenticationDecorator {
     private GoogleAuthenticatorKey key = gAuth.createCredentials();
     private String otpAuthURL = "otpauth://totp/MyApp:user@example.com?secret=" + key.getKey() + "&issuer=MyApp";
 
-    public TwoFAAuthenticationDecorator(Authentication authentication, ImageView shrekImage) {
+    public TwoFAAuthenticationDecorator(Authentication authentication, ImageView view) {
         super(authentication);
-        shrekImage.setImage(generateQRCode(otpAuthURL, 200, 200));
+        view.setImage(generateQRCode(otpAuthURL, 200, 200));
     }
 
     @Override
